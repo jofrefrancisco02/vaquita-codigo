@@ -6,12 +6,11 @@
   "license": "UNLICENSED",
   "engines": { "node": ">=22.13" },
   "scripts": {
-    "deploy": "wrangler d1 migrations apply DB --remote && wrangler deploy",
+    "deploy": "wrangler deploy",
     "local": "node --disable-warning=ExperimentalWarning scripts/servidor-local.mjs",
-    "respaldo": "wrangler d1 export DB --remote --output=respaldo.sql",
     "test": "node --disable-warning=ExperimentalWarning --test"
   },
   "devDependencies": {
-    "wrangler": "^4.36.0"
+    "wrangler": "^4.45.0"
   }
 }

@@ -25,8 +25,6 @@ class Stmt {
 }
 export function crearD1(archivo) {
   const db = new DatabaseSync(archivo);
-  const hay = db.prepare("SELECT name FROM sqlite_master WHERE name = 'juntadas'").get();
-  if (!hay) db.exec(fs.readFileSync(path.join(RAIZ, 'migrations', '0001_inicial.sql'), 'utf8'));
   return {
     cerrar: () => db.close(),
     prepare: sql => new Stmt(db, sql),

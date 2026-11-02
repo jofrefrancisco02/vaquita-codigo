@@ -8,16 +8,12 @@ Corre gratis en el plan Free de Cloudflare: Workers para el servidor y D1 para l
 
 Necesitás una cuenta de GitHub y una de Cloudflare. No hace falta instalar nada en tu computadora.
 
-1. **Subí el código a GitHub.**
-   - Creá un repositorio **público** llamado `vaquita-codigo`. Tiene que ser público para que funcione el paso 2. Se ve el código, pero nunca los datos de las juntadas: esos quedan en Cloudflare.
-   - Tocá **uploading an existing file** y arrastrá todo lo que está **dentro** de la carpeta `vaquita`, con sus subcarpetas.
-   - Confirmá con **Commit changes**.
-2. **Abrí este enlace en el navegador**, reemplazando `TU-USUARIO` por tu usuario de GitHub:
-   `https://deploy.workers.cloudflare.com/?url=https://github.com/TU-USUARIO/vaquita-codigo`
-3. **Seguí los pasos en pantalla.** Entrá o registrate en Cloudflare, autorizá a GitHub y elegí un nombre para el repositorio nuevo que va a crear, por ejemplo `vaquita`. Cloudflare crea la base de datos solo. Confirmá para publicar.
-4. **Abrí la dirección que te da**, del tipo `https://vaquita.tu-usuario.workers.dev`, y creá una juntada de prueba.
+1. **Subí el código a GitHub.** Creá un repositorio llamado `vaquita-codigo`, tocá **uploading an existing file**, arrastrá todo lo que está **dentro** de la carpeta `vaquita` y confirmá con **Commit changes**. Si el repositorio es público se ve el código, pero nunca los datos de las juntadas: esos quedan en Cloudflare.
+2. **Conectalo en Cloudflare.** En **Workers & Pages**, creá una aplicación importando ese repositorio de GitHub. Dejá el comando de publicación `npx wrangler deploy`.
+3. **Esperá a que termine la publicación.** Cloudflare crea la base de datos y la app crea sus tablas la primera vez que arranca.
+4. **Comprobá que ande.** Abrí `https://TU-DIRECCION/api/healthz`: tiene que responder `{"ok":true}`.
 
-El repositorio nuevo es el que queda conectado a la app: cada cambio que se guarde ahí se publica solo.
+Cada cambio que se guarde en el repositorio se publica solo. Si el repositorio o la aplicación tienen otro nombre, poné ese mismo nombre en la línea `name` de `wrangler.toml`.
 
 ## Qué incluye el plan gratuito
 
@@ -43,7 +39,7 @@ Revisá los [límites vigentes](https://developers.cloudflare.com/workers/platfo
 ## Copias de seguridad
 
 - Cloudflare guarda automáticamente el historial de la base durante 7 días (Time Travel), y permite volver a un momento anterior.
-- Para bajar una copia completa a tu computadora, con [Node.js](https://nodejs.org) instalado, abrí la carpeta del proyecto y ejecutá `npm install` y `npm run respaldo`. La primera vez, `npx wrangler login` conecta tu cuenta.
+- Para bajar una copia completa, abrí la base de datos en el panel de Cloudflare y buscá la opción de exportar, o usá `wrangler d1 export` con el nombre que Cloudflare le puso a la base.
 
 ## Seguridad: lo que conviene saber
 
@@ -62,8 +58,7 @@ npm test        # pruebas de la API y de las cuentas
 ```
 
 ```
-worker/       servidor (Cloudflare Worker) y consultas a la base
-migrations/   estructura de la base de datos
+worker/       servidor (Cloudflare Worker), consultas y estructura de la base
 public/       app web; logic.js se comparte con el servidor (cuentas, PDF, validación)
 scripts/      servidor local para desarrollar y probar sin Cloudflare
 test/         pruebas

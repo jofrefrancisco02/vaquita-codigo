@@ -1,5 +1,6 @@
 import L from '../public/logic.js';
 import * as store from './store.mjs';
+import { ESQUEMA } from './schema.mjs';
 
 const MAX_BODY = 256 * 1024;
 const MAX_GASTOS = 300;
@@ -182,8 +183,22 @@ async function paginaApp(req, env, token) {
   return new Response(req.method === 'HEAD' ? null : html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex', ...SEGURIDAD } });
 }
 
+/* Sólo la primera vez, cuando la base está vacía, crea las tablas */
+const basesListas = new WeakSet();
+async function prepararBase(db) {
+  if (basesListas.has(db)) return;
+  try {
+    await db.prepare('SELECT 1 FROM actividad LIMIT 1').first();
+  } catch (e) {
+    if (!/no such table/i.test(String(e && e.message))) throw e;
+    await db.batch(ESQUEMA.map(sql => db.prepare(sql)));
+  }
+  basesListas.add(db);
+}
+
 async function manejar(req, env) {
   const p = new URL(req.url).pathname;
+  if (p.startsWith('/api/') || p.startsWith('/j/')) await prepararBase(env.DB);
   if (p.startsWith('/api/')) {
     for (const r of rutas) {
       if (r.met !== req.method) continue;
@@ -215,6 +230,6 @@ export default {
     }
   },
   async scheduled(evento, env, ctx) {
-    ctx.waitUntil(store.purgar(env.DB));
+    ctx.waitUntil(prepararBase(env.DB).then(() => store.purgar(env.DB)));
   },
 };
