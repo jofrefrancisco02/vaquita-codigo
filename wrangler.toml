@@ -1,0 +1,19 @@
+name = "vaquita"
+main = "worker/index.mjs"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[assets]
+directory = "./public/"
+binding = "ASSETS"
+run_worker_first = ["/api/*", "/j/*", "/ejemplo"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "vaquita"
+database_id = "00000000-0000-4000-8000-000000000000"
+migrations_dir = "migrations"
+
+# Limpia una vez por día lo que lleva más de 30 días borrado
+[triggers]
+crons = ["17 7 * * *"]
